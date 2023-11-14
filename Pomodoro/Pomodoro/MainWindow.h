@@ -25,8 +25,7 @@ public:
 
 private:
 	void StartTimer();
-	void StopTimer();
-	void HandleTimer();
+	void StopTimer(wxCommandEvent& event);
 	void OnTomatoClick(wxCommandEvent& event);
 	void OnTimerChange(wxCommandEvent& event);
 	void OnAddTask(wxCommandEvent& event);

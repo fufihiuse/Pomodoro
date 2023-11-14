@@ -31,7 +31,7 @@ MainWindow::MainWindow(const wxString& title, wxPoint point, int sizeX, int size
 	textInput->Bind(wxEVT_TEXT_ENTER, &MainWindow::OnAddTask, this);
 	this->Bind(wxEVT_CLOSE_WINDOW, &MainWindow::OnWindowClose, this);
 	//this->Bind(pomoEVT_TIMER_START, &MainWindow::StartTimer, this);
-	//this->Bind(pomoEVT_TIMER_END, &MainWindow::StopTimer, this);
+	this->Bind(pomoEVT_TIMER_END, &MainWindow::StopTimer, this);
 
 	//CreateStatusBar();
 }
@@ -44,7 +44,7 @@ void MainWindow::StartTimer()
 	int i = 0;
 
 	// Count down
-	while(timerActive && i < INT_MAX)
+	while(timerActive && i < 300)
 	{
 		timerText->SetLabelText(wxString::Format(wxT("%i"), i++));
 	}
@@ -58,29 +58,27 @@ void MainWindow::StartTimer()
 	{
 		// Ended normally
 		timerActive = false;
+		wxPostEvent(this, wxCommandEvent(pomoEVT_TIMER_END));
 	}
 }
 
-void MainWindow::StopTimer()
+void MainWindow::StopTimer(wxCommandEvent& event)
 {
 	// TODO: kill thread + update text
-	timerActive = false;
+	if (timerActive)
+		timerActive = false;
+	timerThread.join();
 	button->SetLabelText("Start");
-}
-
-void MainWindow::HandleTimer()
-{
-	
 }
 
 void MainWindow::OnTomatoClick(wxCommandEvent& event)
 {
 	if (timerActive)
-		StopTimer();
+		wxPostEvent(this, wxCommandEvent(pomoEVT_TIMER_END));
 	else
 	{
 		timerThread = std::thread(&MainWindow::StartTimer, this);
-		timerThread.detach();	// We don't care about the thread returning anything, async is more important
+		//timerThread.detach();	// We don't care about the thread returning anything, async is more important
 	}
 
 }
