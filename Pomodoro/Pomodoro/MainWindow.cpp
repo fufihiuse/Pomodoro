@@ -1,7 +1,5 @@
 #include "MainWindow.h"
-//#include <thread>
 
-wxDEFINE_EVENT(pomoEVT_TIMER_START, wxCommandEvent);
 wxDEFINE_EVENT(pomoEVT_TIMER_END, wxCommandEvent);
 
 MainWindow::MainWindow(const wxString& title, wxPoint point, int sizeX, int sizeY)
@@ -30,7 +28,6 @@ MainWindow::MainWindow(const wxString& title, wxPoint point, int sizeX, int size
 	button->Bind(wxEVT_BUTTON, &MainWindow::OnTomatoClick, this);
 	textInput->Bind(wxEVT_TEXT_ENTER, &MainWindow::OnAddTask, this);
 	this->Bind(wxEVT_CLOSE_WINDOW, &MainWindow::OnWindowClose, this);
-	//this->Bind(pomoEVT_TIMER_START, &MainWindow::StartTimer, this);
 	this->Bind(pomoEVT_TIMER_END, &MainWindow::StopTimer, this);
 
 	//CreateStatusBar();
@@ -59,12 +56,12 @@ void MainWindow::StartTimer()
 		// Ended normally
 		timerActive = false;
 		wxPostEvent(this, wxCommandEvent(pomoEVT_TIMER_END));
+
 	}
 }
 
 void MainWindow::StopTimer(wxCommandEvent& event)
 {
-	// TODO: kill thread + update text
 	if (timerActive)
 		timerActive = false;
 	timerThread.join();
@@ -78,7 +75,6 @@ void MainWindow::OnTomatoClick(wxCommandEvent& event)
 	else
 	{
 		timerThread = std::thread(&MainWindow::StartTimer, this);
-		//timerThread.detach();	// We don't care about the thread returning anything, async is more important
 	}
 
 }
